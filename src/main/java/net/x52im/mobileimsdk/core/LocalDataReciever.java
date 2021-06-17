@@ -65,14 +65,16 @@ public class LocalDataReciever {
                 //              超时丢弃，但并不影响什么。
                 if (pFromServer.getType() == ProtocalType.S.FROM_SERVER_TYPE_OF_RESPONSE$LOGIN
                         && ProtocalFactory.parsePLoginInfoResponse(pFromServer.getDataContent()).getCode() != 0) {
-                    if (ClientCoreSDK.DEBUG)
+                    if (ClientCoreSDK.DEBUG) {
                         Log.d(TAG, "【IMCORE-TCP】【BugFIX】这是服务端的登陆返回响应包，" + "且服务端判定登陆失败(即code!=0)，本次无需发送ACK应答包！");
+                    }
                 }
                 // # Bug FIX 20170620 END 【1/2】
                 else {
                     if (QoS4ReciveDaemon.getInstance().hasRecieved(pFromServer.getFp())) {
-                        if (ClientCoreSDK.DEBUG)
+                        if (ClientCoreSDK.DEBUG) {
                             Log.d(TAG, "【IMCORE-TCP】【QoS机制】" + pFromServer.getFp() + "已经存在于发送列表中，这是重复包，通知应用层收到该包罗！");
+                        }
 
                         QoS4ReciveDaemon.getInstance().addRecieved(pFromServer);
                         sendRecievedBack(pFromServer);
@@ -124,18 +126,21 @@ public class LocalDataReciever {
     }
 
     protected void onServerResponseKeepAlive() {
-        if (ClientCoreSDK.DEBUG)
+        if (ClientCoreSDK.DEBUG) {
             Log.p(TAG, "【IMCORE-TCP】收到服务端回过来的Keep Alive心跳响应包.");
+        }
         KeepAliveDaemon.getInstance().updateGetKeepAliveResponseFromServerTimstamp();
     }
 
     protected void onMessageRecievedACK(Protocal pFromServer) {
         String theFingerPrint = pFromServer.getDataContent();
-        if (ClientCoreSDK.DEBUG)
+        if (ClientCoreSDK.DEBUG) {
             Log.i(TAG, "【IMCORE-TCP】【QoS】收到" + pFromServer.getFrom() + "发过来的指纹为" + theFingerPrint + "的应答包.");
+        }
 
-        if (ClientCoreSDK.getInstance().getMessageQoSEvent() != null)
+        if (ClientCoreSDK.getInstance().getMessageQoSEvent() != null) {
             ClientCoreSDK.getInstance().getMessageQoSEvent().messagesBeReceived(theFingerPrint);
+        }
 
         QoS4SendDaemon.getInstance().remove(theFingerPrint);
     }
@@ -179,6 +184,7 @@ public class LocalDataReciever {
         ClientCoreSDK.getInstance().setLoginHasInit(true);
         AutoReLoginDaemon.getInstance().stop();
         KeepAliveDaemon.getInstance().setNetworkConnectionLostObserver(new Observer() {
+            @Override
             public void update(Observable observable, Object data) {
                 fireDisconnectedToServer();
             }
@@ -215,8 +221,9 @@ public class LocalDataReciever {
                             , pFromServer.isBridge())) {
                 @Override
                 protected void onPostExecute(Integer code) {
-                    if (ClientCoreSDK.DEBUG)
+                    if (ClientCoreSDK.DEBUG) {
                         Log.d(TAG, "【IMCORE-TCP】【QoS】向" + pFromServer.getFrom() + "发送" + pFromServer.getFp() + "包的应答包成功,from=" + pFromServer.getTo() + "！");
+                    }
                 }
             }.execute();
         } else {

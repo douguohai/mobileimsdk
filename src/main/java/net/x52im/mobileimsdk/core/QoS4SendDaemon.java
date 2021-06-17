@@ -41,8 +41,9 @@ public class QoS4SendDaemon {
     private Timer timer = null;
 
     public static QoS4SendDaemon getInstance() {
-        if (instance == null)
+        if (instance == null) {
             instance = new QoS4SendDaemon();
+        }
 
         return instance;
     }
@@ -53,6 +54,7 @@ public class QoS4SendDaemon {
 
     private void init() {
         timer = new Timer(CHECH_INTERVAL, new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 run();
             }
@@ -65,16 +67,18 @@ public class QoS4SendDaemon {
             _excuting = true;
 
             try {
-                if (ClientCoreSDK.DEBUG && sentMessages.size() > 0)
+                if (ClientCoreSDK.DEBUG && sentMessages.size() > 0) {
                     Log.d(TAG, "【IMCORE-TCP】【QoS】====== 消息发送质量保证线程运行中, 当前需要处理的列表长度为" + sentMessages.size() + "...");
+                }
 
                 for (String key : sentMessages.keySet()) {
                     final Protocal p = sentMessages.get(key);
                     if (p != null && p.isQoS()) {
                         if (p.getRetryCount() >= QOS_TRY_COUNT) {
-                            if (ClientCoreSDK.DEBUG)
+                            if (ClientCoreSDK.DEBUG) {
                                 Log.d(TAG, "【IMCORE-TCP】【QoS】指纹为" + p.getFp()
                                         + "的消息包重传次数已达" + p.getRetryCount() + "(最多" + QOS_TRY_COUNT + "次)上限，将判定为丢包！");
+                            }
 
                             lostMessages.add((Protocal) p.clone());
                             remove(p.getFp());
@@ -83,9 +87,10 @@ public class QoS4SendDaemon {
                             Long sendMessageTimestamp = sendMessagesTimestamp.get(key);
                             long delta = System.currentTimeMillis() - (sendMessageTimestamp == null ? 0 : sendMessageTimestamp);
                             if (delta <= MESSAGES_JUST$NOW_TIME) {
-                                if (ClientCoreSDK.DEBUG)
+                                if (ClientCoreSDK.DEBUG) {
                                     Log.w(TAG, "【IMCORE-TCP】【QoS】指纹为" + key + "的包距\"刚刚\"发出才" + delta
                                             + "ms(<=" + MESSAGES_JUST$NOW_TIME + "ms将被认定是\"刚刚\"), 本次不需要重传哦.");
+                                }
                             }
                             //### 2015103 Bug Fix END
                             else {
@@ -95,10 +100,11 @@ public class QoS4SendDaemon {
                                         if (code == 0) {
                                             p.increaseRetryCount();
 
-                                            if (ClientCoreSDK.DEBUG)
+                                            if (ClientCoreSDK.DEBUG) {
                                                 Log.d(TAG, "【IMCORE-TCP】【QoS】指纹为" + p.getFp()
                                                         + "的消息包已成功进行重传，此次之后重传次数已达"
                                                         + p.getRetryCount() + "(最多" + QOS_TRY_COUNT + "次).");
+                                            }
                                         } else {
                                             Log.w(TAG, "【IMCORE-TCP】【QoS】指纹为" + p.getFp()
                                                     + "的消息包重传失败，它的重传次数之前已累计为"
@@ -132,18 +138,20 @@ public class QoS4SendDaemon {
     public void startup(boolean immediately) {
         stop();
 
-        if (immediately)
+        if (immediately) {
             timer.setInitialDelay(0);
-        else
+        } else {
             timer.setInitialDelay(CHECH_INTERVAL);
+        }
         timer.start();
 
         running = true;
     }
 
     public void stop() {
-        if (timer != null)
+        if (timer != null) {
             timer.stop();
+        }
         running = false;
     }
 
@@ -170,8 +178,9 @@ public class QoS4SendDaemon {
             return;
         }
 
-        if (sentMessages.get(p.getFp()) != null)
+        if (sentMessages.get(p.getFp()) != null) {
             Log.w(TAG, "【IMCORE-TCP】【QoS】指纹为" + p.getFp() + "的消息已经放入了发送质量保证队列，该消息为何会重复？（生成的指纹码重复？还是重复put？）");
+        }
 
         sentMessages.put(p.getFp(), p);
         sendMessagesTimestamp.put(p.getFp(), System.currentTimeMillis());
