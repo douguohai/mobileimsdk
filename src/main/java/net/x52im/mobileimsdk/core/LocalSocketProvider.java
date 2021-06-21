@@ -31,8 +31,14 @@ import net.x52im.mobileimsdk.utils.MBObserver;
 
 public class LocalSocketProvider {
     private final static String TAG = LocalSocketProvider.class.getSimpleName();
-    public static int TCP_FRAME_FIXED_HEADER_LENGTH = 4; // 4 bytes
-    public static int TCP_FRAME_MAX_BODY_LENGTH = 6 * 1024; // 6K bytes
+    /**
+     * 4 bytes
+     */
+    public static int TCP_FRAME_FIXED_HEADER_LENGTH = 4;
+    /**
+     * 6K bytes
+     */
+    public static int TCP_FRAME_MAX_BODY_LENGTH = 6 * 1024;
     private static LocalSocketProvider instance = null;
 
     private Bootstrap bootstrap = null;
@@ -51,6 +57,9 @@ public class LocalSocketProvider {
         //
     }
 
+    /**
+     * 初始化服务端链接建立
+     */
     private void initLocalBootstrap() {
         try {
             EventLoopGroup group = new NioEventLoopGroup();
@@ -60,16 +69,27 @@ public class LocalSocketProvider {
 
             bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
             bootstrap.option(ChannelOption.TCP_NODELAY, true);
-            bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5 * 1000);// 10 * 1000);
+            // 10 * 1000);
+            bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5 * 1000);
         } catch (Exception e) {
             Log.w(TAG, "localSocket初始化时出错，原因是：" + e.getMessage(), e);
         }
     }
 
+    /**
+     * 设置回调
+     *
+     * @param connectionDoneObserver
+     */
     public void setConnectionDoneObserver(MBObserver connectionDoneObserver) {
         this.connectionDoneObserver = connectionDoneObserver;
     }
 
+    /**
+     * 重置socket长链接
+     *
+     * @return
+     */
     public Channel resetLocalSocket() {
         try {
             closeLocalSocket();
@@ -83,17 +103,24 @@ public class LocalSocketProvider {
         }
     }
 
+    /**
+     * 尝试和服务端主机获取链接
+     *
+     * @return
+     */
     private boolean tryConnectToHost() {
         if (ClientCoreSDK.DEBUG) {
             Log.d(TAG, "【IMCORE-TCP】tryConnectToHost并获取connection开始了...");
         }
 
         try {
-            ChannelFuture cf = bootstrap.connect(ConfigEntity.serverIP, ConfigEntity.serverPort);// .sync()
+            // .sync()
+            ChannelFuture cf = bootstrap.connect(ConfigEntity.serverIP, ConfigEntity.serverPort);
             this.localSocket = cf.channel();
             this.localConnectingFuture = cf;
 
             cf.addListener(new ChannelFutureListener() {
+                @Override
                 public void operationComplete(ChannelFuture f) throws Exception {
                     if (f.isDone()) {
                         if (f.isCancelled()) {
@@ -114,6 +141,7 @@ public class LocalSocketProvider {
 
             this.localSocket.closeFuture().addListener(
                     new ChannelFutureListener() {
+                        @Override
                         public void operationComplete(ChannelFuture future) throws Exception {
                             Log.i(TAG, "【IMCORE-TCP】channel优雅退出开始。。。");
 
@@ -137,10 +165,20 @@ public class LocalSocketProvider {
         }
     }
 
+    /**
+     * 判断本地服务状态
+     *
+     * @return 准备好返回true 不好返回false
+     */
     public boolean isLocalSocketReady() {
         return localSocket != null && localSocket.isActive();
     }
 
+    /**
+     * 获取本地socket远程链接对象
+     *
+     * @return
+     */
     public Channel getLocalSocket() {
         if (isLocalSocketReady()) {
             // if(ClientCoreSDK.DEBUG)
@@ -196,8 +234,10 @@ public class LocalSocketProvider {
         }
     }
 
-    private class TCPChannelInitializerHandler extends
-            ChannelInitializer<Channel> {
+    /**
+     * netty 消息处理类，添加编码和解码
+     */
+    private class TCPChannelInitializerHandler extends ChannelInitializer<Channel> {
         @Override
         protected void initChannel(Channel ch) throws Exception {
             ChannelPipeline pipeline = ch.pipeline();
@@ -207,6 +247,9 @@ public class LocalSocketProvider {
         }
     }
 
+    /**
+     * 具体消息处理逻辑
+     */
     private class TcpClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
         private final String TAG = TcpClientHandler.class.getSimpleName();
 

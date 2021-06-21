@@ -24,6 +24,9 @@ import io.netty.channel.ChannelFutureListener;
 
 import java.net.SocketAddress;
 
+/**
+ * 发送消息工具类
+ */
 public class UDPUtils {
     private final static String TAG = UDPUtils.class.getSimpleName();
 
@@ -34,8 +37,7 @@ public class UDPUtils {
     public static synchronized boolean send(Channel skt, byte[] d, final int dataLen, final MBObserver resultObserver) {
         boolean sendSucess = false;
         if ((skt != null) && (d != null)) {
-            Log.d(TAG, "【IMCORE-TCP】正在send()TCP数据时，[d.len=" + d.length + ",remoteIpAndPort="
-                    + UDPUtils.getSocketAdressInfo(skt.remoteAddress()) + "]"
+            Log.d(TAG, "【IMCORE-TCP】正在send()TCP数据时，[d.len=" + d.length + ",remoteIpAndPort=" + UDPUtils.getSocketAdressInfo(skt.remoteAddress()) + "]"
                     + "，本地端口是：" + UDPUtils.getSocketAdressInfo(skt.localAddress()) + " ...");
 
             if (skt.isActive()) {

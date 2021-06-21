@@ -43,8 +43,15 @@ public class LocalDataSender {
     private LocalDataSender() {
     }
 
-    int sendLogin(final String loginUserId, final String loginToken,
-                  final String extra) {
+    /**
+     * 用户登陆
+     *
+     * @param loginUserId
+     * @param loginToken
+     * @param extra
+     * @return
+     */
+    int sendLogin(final String loginUserId, final String loginToken, final String extra) {
         int codeForCheck = this.checkBeforeSend();
         if (codeForCheck != ErrorCode.COMMON_CODE_OK) {
             return codeForCheck;
@@ -152,8 +159,7 @@ public class LocalDataSender {
         Channel ds = LocalSocketProvider.getInstance().getLocalSocket();
         if (ds != null && ds.isActive()) {// && [ClientCoreSDK
             // sharedInstance].connectedToServer)
-            return UDPUtils.send(ds, fullProtocalBytes, dataLen) ? ErrorCode.COMMON_CODE_OK
-                    : ErrorCode.COMMON_DATA_SEND_FAILD;
+            return UDPUtils.send(ds, fullProtocalBytes, dataLen) ? ErrorCode.COMMON_CODE_OK : ErrorCode.COMMON_DATA_SEND_FAILD;
         } else {
             Log.d(TAG, "【IMCORE-TCP】scocket未连接，无法发送，本条将被忽略（dataLen=" + dataLen + "）!");
             return ErrorCode.COMMON_CODE_OK;

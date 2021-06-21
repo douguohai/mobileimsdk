@@ -20,10 +20,27 @@ import net.x52im.mobileimsdk.core.KeepAliveDaemon;
 
 public class ConfigEntity {
     public static String appKey = null;
-    public static String serverIP = "192.168.0.190";// "rbcore.52im.net";
-    public static int serverPort = 8901;
-    public static int localUDPPort = 0;// 7801;
 
+    /**
+     * 服务端地址
+     */
+    public static String serverIP = "192.168.0.190";
+
+    /**
+     * tcp端口
+     */
+    public static int serverPort = 8901;
+
+    /**
+     * udp端口 默认7801
+     */
+    public static int localUDPPort = 0;
+
+    /**
+     * 设置心跳包时间
+     *
+     * @param mode 心跳模式
+     */
     public static void setSenseMode(SenseMode mode) {
         int keepAliveInterval = 0;
         int networkConnectionTimeout = 0;
@@ -53,6 +70,10 @@ public class ConfigEntity {
                 keepAliveInterval = 120000;// 120s
                 networkConnectionTimeout = keepAliveInterval * 1 + 5000;// 125s
                 break;
+            default:
+                //默认心跳包3秒一次，
+                keepAliveInterval = 3000;
+                networkConnectionTimeout = keepAliveInterval * 1 + 2000;
         }
 
         if (keepAliveInterval > 0) {
