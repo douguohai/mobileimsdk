@@ -16,15 +16,15 @@
  */
 package net.x52im.mobileimsdk;
 
+import net.x52im.mobileimsdk.core.*;
 import net.x52im.mobileimsdk.event.ChatBaseEvent;
 import net.x52im.mobileimsdk.event.ChatMessageEvent;
 import net.x52im.mobileimsdk.event.MessageQoSEvent;
-import net.x52im.mobileimsdk.core.AutoReLoginDaemon;
-import net.x52im.mobileimsdk.core.KeepAliveDaemon;
-import net.x52im.mobileimsdk.core.LocalSocketProvider;
-import net.x52im.mobileimsdk.core.QoS4ReciveDaemon;
-import net.x52im.mobileimsdk.core.QoS4SendDaemon;
 
+/**
+ * 客户端核心sdk
+ * @author tianwen
+ */
 public class ClientCoreSDK {
     private final static String TAG = ClientCoreSDK.class.getSimpleName();
 

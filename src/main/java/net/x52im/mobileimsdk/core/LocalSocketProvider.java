@@ -29,6 +29,10 @@ import net.x52im.mobileimsdk.conf.ConfigEntity;
 import net.x52im.mobileimsdk.utils.Log;
 import net.x52im.mobileimsdk.utils.MBObserver;
 
+/**
+ * 提供稳定的socket长链接服务
+ * @author tianwen
+ */
 public class LocalSocketProvider {
     private final static String TAG = LocalSocketProvider.class.getSimpleName();
     /**

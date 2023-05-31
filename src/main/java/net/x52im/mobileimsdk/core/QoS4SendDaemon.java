@@ -27,6 +27,10 @@ import net.x52im.mobileimsdk.ClientCoreSDK;
 import net.x52im.mobileimsdk.utils.Log;
 import net.x52im.mobileimsdk.server.protocal.Protocal;
 
+/**
+ * 消息发送确认
+ * @author tianwen
+ */
 public class QoS4SendDaemon {
     private final static String TAG = QoS4SendDaemon.class.getSimpleName();
     private static QoS4SendDaemon instance = null;

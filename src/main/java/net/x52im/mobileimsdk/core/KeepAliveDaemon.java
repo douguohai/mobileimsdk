@@ -16,16 +16,19 @@
  */
 package net.x52im.mobileimsdk.core;
 
+import net.x52im.mobileimsdk.ClientCoreSDK;
+import net.x52im.mobileimsdk.utils.Log;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Observer;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.swing.Timer;
-
-import net.x52im.mobileimsdk.ClientCoreSDK;
-import net.x52im.mobileimsdk.utils.Log;
-
+/**
+ * 心跳服务
+ * @author tianwen
+ */
 public class KeepAliveDaemon {
     private final static String TAG = KeepAliveDaemon.class.getSimpleName();
     private static KeepAliveDaemon instance = null;
@@ -33,9 +36,9 @@ public class KeepAliveDaemon {
     public static int NETWORK_CONNECTION_TIME_OUT = KEEP_ALIVE_INTERVAL + 5000;
 
     private boolean keepAliveRunning = false;
-    private AtomicLong lastGetKeepAliveResponseFromServerTimstamp = new AtomicLong(0);
+    private AtomicLong lastGetKeepAliveResponseFromServerTimestamp = new AtomicLong(0);
     private Observer networkConnectionLostObserver = null;
-    private boolean _excuting = false;
+    private boolean execute = false;
     private Timer timer = null;
 
     public static KeepAliveDaemon getInstance() {
@@ -50,37 +53,32 @@ public class KeepAliveDaemon {
     }
 
     private void init() {
-        timer = new Timer(KEEP_ALIVE_INTERVAL, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                run();
-            }
-        });
+        timer = new Timer(KEEP_ALIVE_INTERVAL, e -> run());
     }
 
     public void run() {
-        if (!_excuting) {
+        if (!execute) {
             boolean willStop = false;
-            _excuting = true;
+            execute = true;
             if (ClientCoreSDK.DEBUG) {
                 Log.i(TAG, "【IMCORE-TCP】心跳线程执行中...");
             }
             int code = LocalDataSender.getInstance().sendKeepAlive();
 
-            boolean isInitialedForKeepAlive = (lastGetKeepAliveResponseFromServerTimstamp.longValue() == 0);
+            boolean isInitialedForKeepAlive = (lastGetKeepAliveResponseFromServerTimestamp.longValue() == 0);
             if (isInitialedForKeepAlive) {
-                lastGetKeepAliveResponseFromServerTimstamp.set(System.currentTimeMillis());
+                lastGetKeepAliveResponseFromServerTimestamp.set(System.currentTimeMillis());
             }
 
             if (!isInitialedForKeepAlive) {
                 long now = System.currentTimeMillis();
-                if (now - lastGetKeepAliveResponseFromServerTimstamp.longValue() >= NETWORK_CONNECTION_TIME_OUT) {
+                if (now - lastGetKeepAliveResponseFromServerTimestamp.longValue() >= NETWORK_CONNECTION_TIME_OUT) {
                     notifyConnectionLost();
                     willStop = true;
                 }
             }
 
-            _excuting = false;
+            execute = false;
             if (!willStop) {
                 ; // do nothing
             } else {
@@ -101,7 +99,7 @@ public class KeepAliveDaemon {
             timer.stop();
         }
         keepAliveRunning = false;
-        lastGetKeepAliveResponseFromServerTimstamp.set(0);
+        lastGetKeepAliveResponseFromServerTimestamp.set(0);
     }
 
     public void start(boolean immediately) {
@@ -120,7 +118,7 @@ public class KeepAliveDaemon {
     }
 
     public void updateGetKeepAliveResponseFromServerTimstamp() {
-        lastGetKeepAliveResponseFromServerTimstamp.set(System.currentTimeMillis());
+        lastGetKeepAliveResponseFromServerTimestamp.set(System.currentTimeMillis());
     }
 
     public void setNetworkConnectionLostObserver(Observer networkConnectionLostObserver) {

@@ -20,18 +20,48 @@ import net.x52im.mobileimsdk.ClientCoreSDK;
 import net.x52im.mobileimsdk.utils.Log;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
+
+/**
+ * 系统自动重新登录服务
+ * @author tianwen
+ */
 public class AutoReLoginDaemon {
-    private final static String TAG = AutoReLoginDaemon.class.getSimpleName();
-    private static AutoReLoginDaemon instance = null;
-    public static int AUTO_RE$LOGIN_INTERVAL = 3000;// 2000;
 
+    /**
+     * 模块简化名称
+     */
+    private final static String TAG = AutoReLoginDaemon.class.getSimpleName();
+
+    /**
+     * 单例实例实例
+     */
+    private static AutoReLoginDaemon instance = null;
+
+    /**
+     * 定时重新登录时间
+     */
+    public static int AUTO_RE$LOGIN_INTERVAL = 3000;
+
+    /**
+     * 当前进程是否是否在运行
+     */
     private boolean autoReLoginRunning = false;
-    private boolean _excuting = false;
+
+    /**
+     * 是否正在执行
+     */
+    private boolean execute = false;
+
+    /**
+     * 定时器
+     */
     private Timer timer = null;
 
+    /**
+     * 获取实例信息
+     * @return 实例对象
+     */
     public static AutoReLoginDaemon getInstance() {
         if (instance == null) {
             instance = new AutoReLoginDaemon();
@@ -44,17 +74,12 @@ public class AutoReLoginDaemon {
     }
 
     private void init() {
-        timer = new Timer(AUTO_RE$LOGIN_INTERVAL, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                run();
-            }
-        });
+        timer = new Timer(AUTO_RE$LOGIN_INTERVAL, e -> run());
     }
 
     public void run() {
-        if (!_excuting) {
-            _excuting = true;
+        if (!execute) {
+            execute = true;
             if (ClientCoreSDK.DEBUG) {
                 Log.p(TAG, "【IMCORE】自动重新登陆线程执行中, autoReLogin?" + ClientCoreSDK.autoReLogin + "...");
             }
@@ -72,7 +97,7 @@ public class AutoReLoginDaemon {
             }
 
             //
-            _excuting = false;
+            execute = false;
         }
     }
 

@@ -25,6 +25,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * 消息接收确认
+ * @author tianwen
+ */
 public class QoS4ReciveDaemon {
     private final static String TAG = QoS4ReciveDaemon.class.getSimpleName();
     private static QoS4ReciveDaemon instance = null;
