@@ -19,7 +19,6 @@ package net.x52im.mobileimsdk.conf;
 import net.x52im.mobileimsdk.core.KeepAliveDaemon;
 
 public class ConfigEntity {
-    public static String appKey = null;
 
     /**
      * 服务端地址
@@ -76,12 +75,8 @@ public class ConfigEntity {
                 networkConnectionTimeout = keepAliveInterval * 1 + 2000;
         }
 
-        if (keepAliveInterval > 0) {
-            KeepAliveDaemon.KEEP_ALIVE_INTERVAL = keepAliveInterval;
-        }
-        if (networkConnectionTimeout > 0) {
-            KeepAliveDaemon.NETWORK_CONNECTION_TIME_OUT = networkConnectionTimeout;
-        }
+        KeepAliveDaemon.KEEP_ALIVE_INTERVAL = keepAliveInterval;
+        KeepAliveDaemon.NETWORK_CONNECTION_TIME_OUT = networkConnectionTimeout;
     }
 
     public enum SenseMode {

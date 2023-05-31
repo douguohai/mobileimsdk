@@ -1,29 +1,24 @@
-/*
- * Copyright (C) 2020  即时通讯网(52im.net) & Jack Jiang.
- * The MobileIMSDK_TCP (MobileIMSDK v5.x TCP版) Project.
- * All rights reserved.
- *
- * > Github地址：https://github.com/JackJiang2011/MobileIMSDK
- * > 文档地址：  http://www.52im.net/forum-89-1.html
- * > 技术社区：  http://www.52im.net/
- * > 技术交流群：320837163 (http://www.52im.net/topic-qqgroup.html)
- * > 作者公众号：“即时通讯技术圈】”，欢迎关注！
- * > 联系作者：  http://www.52im.net/thread-2792-1-1.html
- *
- * "即时通讯网(52im.net) - 即时通讯开发者社区!" 推荐开源工程。
- *
- * MessageQoSEvent.java at 2020-8-6 14:24:51, code by Jack Jiang.
- */
-package net.x52im.mobileimsdk.event;
+package net.x52im.mobileimsdk.service;
 
+import lombok.extern.slf4j.Slf4j;
+import net.x52im.mobileimsdk.event.MessageQoSEvent;
 import net.x52im.mobileimsdk.server.protocal.Protocal;
 
 import java.util.ArrayList;
 
 /**
- * @author tianwen
- */
-public interface MessageQoSEvent {
+ * <p>
+ * java类作用描述
+ * </p>
+ *
+ * @author : tianwen
+ * @version : 1.0
+ * @date : 2023/5/31 12:46
+ **/
+@Slf4j
+public class MessageQoSEventImpl implements MessageQoSEvent {
+    private final static String TAG = MessageQoSEventImpl.class.getSimpleName();
+
 
     /**
      * 消息未送达的回调事件通知.
@@ -33,7 +28,11 @@ public interface MessageQoSEvent {
      *                     以UI上将其标记为”发送失败“以便即时告之用户
      * @see net.x52im.mobileimsdk.server.protocal.Protocal
      */
-    void messagesLost(ArrayList<Protocal> lostMessages);
+    @Override
+    public void messagesLost(ArrayList<Protocal> lostMessages) {
+        log.info(TAG, "【DEBUG_UI】收到系统的未实时送达事件通知，当前共有" + lostMessages.size() + "个包QoS保证机制结束，判定为【无法实时送达】！");
+
+    }
 
     /**
      * 消息已被对方收到的回调事件通知.
@@ -49,5 +48,12 @@ public interface MessageQoSEvent {
      *                       UI是将其标记为”已送达“或”已读“以便提升用户体验
      * @see net.x52im.mobileimsdk.server.protocal.Protocal
      */
-    void messagesBeReceived(String theFingerPrint);
+    @Override
+    public void messagesBeReceived(String theFingerPrint) {
+        if (theFingerPrint != null) {
+            log.info(TAG, "【DEBUG_UI】收到对方已收到消息事件的通知，fp=" + theFingerPrint);
+        }
+    }
+
+
 }
